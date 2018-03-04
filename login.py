@@ -8,15 +8,14 @@ from PyQt5.QtWidgets import (QWidget, QPushButton,
 from main import Main
 from PyQt5.QtGui import *
 import pickle
+import sqlite3
 
 
 class Login(QWidget):
 
     def __init__(self):
         super().__init__()
-
         self.initUI()
-
 
     def initUI(self):
 
@@ -25,17 +24,17 @@ class Login(QWidget):
 
         email = QLabel('E-mail:')
         password = QLabel('Password:')
-        self.emailEdit = QLineEdit()
-        self.passwordEdit = QLineEdit()
+        self.emailEdit = QLineEdit('dima')
+        self.passwordEdit = QLineEdit('123')
         self.chose_expansion = QComboBox()
         self.chose_expansion.addItem('600*400')
         self.chose_expansion.addItem('800*600')
         self.chose_expansion.addItem('1200*800')
 
-        shadow = Q(self)
-        shadow.setColor(QColor(50,200,200))
-        shadow.setBlurRadius(30)
-        shadow.setOffset(4,-3)
+        #shadow = Q(self)
+        #shadow.setColor(QColor(50,200,200))
+        #shadow.setBlurRadius(30)
+        #shadow.setOffset(4,-3)
 
         okButton.setStyleSheet("background-color: rgba(100, 0, 100, 100); color: white;"
                                "font-family: Verdana; font-size: 16px;"
@@ -85,6 +84,33 @@ class Login(QWidget):
     def login(self):
         email = self.emailEdit.text()
         password = self.passwordEdit.text()
+        conn = sqlite3.connect('mydatabase.db')
+        print('good')
+        #conn.row_factory = sqlite3.Row
+        #Создание курсора
+        c = conn.cursor()
+        print('good')
+        c.execute("SELECT * FROM users")
+        print('good')
+        y = c.fetchall()
+        x = y[0]
+        print('good')
+        name = x[0]
+        pas = x[1]
+        print(name, pas)
+        if str(email) == str(name):
+            if str(password) == str(pas):
+                number = self.chose_expansion.currentIndex()
+                print("()")
+                expansion = self.chose_expansion.itemText(number)
+                print("!")
+                self.main = Main(expansion)
+                print("!!")
+                self.close()
+                print("!!!")
+    def login_old(self):
+        email = self.emailEdit.text()
+        password = self.passwordEdit.text()
         d = {'email':email, 'pass':password}
         f = open('login.txt', 'rb')
         data_new = pickle.load(f)
@@ -99,6 +125,7 @@ class Login(QWidget):
             print('good')
             self.main = Main(expansion)
             self.close()
+            print("good")
         else:
             print("no", d['email'])
         f.close()

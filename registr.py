@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import (QWidget, QPushButton,
     QHBoxLayout, QVBoxLayout, QApplication, QLabel, QLineEdit)
 from login import Login
 import pickle
+import sqlite3
 
 
 class Registr(QWidget):
@@ -84,21 +85,29 @@ class Registr(QWidget):
         password = self.passwordEdit.text()
         password_again = self.passwordEdit_again.text()
         if password == password_again:
-            print(email, password, password_again)
-            f = open('login.txt', 'rb')
-            Data = pickle.load(f)
-            print(Data)
-            f.close()
-            f = open('login.txt', 'ab')
-            print("D: ", Data)
-            d = {email:password}
-            print("d: ", d)
-            Data_new = {**d, **Data}
-            print("D_new: ", Data_new)
-            pickle.dump(Data_new, f)
-            f.close()
-            self.login = Login()
-            self.close()
+            conn = sqlite3.connect("mydatabase.db") # или :memory: чтобы сохранить в RAM
+            cursor = conn.cursor()
+
+            login = [(email, password)]
+
+            cursor.execute("INSERT INTO users (name,password) VALUES (email,password)")
+            conn.commit()
+            print(cursor.fetchall())
+            #print(email, password, password_again)
+            #f = open('login.txt', 'rb')
+            #Data = pickle.load(f)
+            #print(Data)
+            #f.close()
+            #f = open('login.txt', 'ab')
+            #print("D: ", Data)
+            #d = {email:password}
+            #print("d: ", d)
+            #Data_new = {**d, **Data}
+            #print("D_new: ", Data_new)
+            #pickle.dump(Data_new, f)
+            #f.close()
+            #self.login = Login()
+            #self.close()
         else:
             print('gg')
 

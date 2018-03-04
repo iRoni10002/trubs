@@ -1,56 +1,43 @@
-#!/usr/bin/python3
-# -*- coding: utf-8 -*-
+ 
 import sys
-from PyQt5.QtWidgets import (QWidget, QLabel, QLineEdit, QTextEdit, QGridLayout, QApplication, QMainWindow, QPushButton, QInputDialog)
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (QWidget, QLCDNumber, QSlider, QVBoxLayout, QApplication, QMainWindow)
 
-class Login(QWidget):
 
-    def __init__(self):
-        super().__init__()
-        self.initUI()
-
-    def initUI(self):
-        email = QLabel('E-mail:')
-        password = QLabel('Password')
-        emailEdit = QLineEdit()
-        passwordEdit = QTextEdit()
-        grid = QGridLayout()
-        grid.setSpacing(10)
-        grid.addWidget(email, 1, 1)
-        grid.addWidget(password, 2, 1)
-        grid.addWidget(emailEdit, 1, 2)
-        grid.addWidget(passwordEdit, 2, 2)
-
-        self.setLayout(grid)
-
-        self.setGeometry(200, 100, 400, 200)
-        self.setWindowTitle('Review')
-        self.show()
-
-class Main(QMainWindow):
+class Ex(QWidget):
 
     def __init__(self):
         super().__init__()
         self.initUI()
 
     def initUI(self):
-        log = Login()
-        log.move(100, 100)
+        self.lcd = QLCDNumber(self)
+        self.sld = QSlider(Qt.Horizontal, self)
+        self.vbox = QVBoxLayout()
+        self.vbox.addWidget(self.lcd)
+        self.vbox.addWidget(self.sld)
+        self.setLayout(self.vbox)
+        self.sld.valueChanged.connect(self.lcd.display)
 
 
-        self.btn = QPushButton('Dialog', self)
-        self.btn.move(20, 20)
-        self.btn.clicked.connect(self.showLog)
-
-
-        self.setGeometry(100, 100, 800, 600)
-        self.setWindowTitle('Log')
         self.show()
+class Example(QMainWindow):
 
-    def showLog(self):
-        self.log = Login()
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+        
+    def initUI(self):
+        self.ff = Ex()
+        self.h = QVBoxLayout()
+        self.h.addWidget(self.ff)
+        self.setLayout(self.h)
+        self.setCentralWidget(self.ff)
+        self.setGeometry(300, 300, 450, 350)
+        self.setWindowTitle('Signal & slot')
+        self.show()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = Main()
+    ex = Example()
     sys.exit(app.exec_())
