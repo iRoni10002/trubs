@@ -2,14 +2,43 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from PyQt5.QtWidgets import QMainWindow, QAction, qApp, QApplication, QPushButton, QHBoxLayout, QVBoxLayout, QWidget
-from PyQt5.QtGui import QIcon
+from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtWidgets import (QMainWindow, QAction, qApp, QApplication, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QDockWidget, QLabel,
+                             QScrollArea, QDialog)
+from PyQt5 import QtGui
 from PyQt5.QtGui import *
 from reg_form import Reg
-from city import City
+from city import City, ListCity
+from institution import ListInstitution
 import sqlite3
+from peewee import *
+from db_manger import *
 
-class MainWidget(QWidget):
+class UpdateScreen(QDialog):
+    def __init__(self, expansion):
+        super().__init__()
+        self.expansion = expansion
+        self.initUI()
+
+    def initUI(self):
+        vv = QVBoxLayout()
+        self.setLayout(vv)
+        p = QPalette()
+        gradient = QLinearGradient(0, 0, 120, 400)
+        gradient.setColorAt(0.0, QColor(117,160,252))
+        gradient.setColorAt(1.0, QColor(193,203,253))
+        p.setBrush(QPalette.Window, QBrush(gradient))
+        self.setPalette(p)
+        if self.expansion == '1':
+            self.showFullScreen()
+        else:
+            self.setGeometry(0, 30, 800, 600)
+            self.setFixedSize(800, 600)
+        self.setWindowTitle('Menubar')
+        self.show()
+
+class MainCity(QWidget):
 
     def __init__(self, expansion):
         super().__init__()
@@ -17,78 +46,146 @@ class MainWidget(QWidget):
         self.initUI()
 
     def initUI(self):
-        add_city = QPushButton('+')
-        add_city.clicked.connect(self.addCity)
-        #add_city.clicked.connect(self.update)
-        #exitAction = QAction('&Exit', self)
-        #exitAction.setShortcut('Ctrl+Q')
-        #exitAction.setStatusTip('Exit application')
-        #exitAction.triggered.connect(qApp.quit)
-        #self.statusBar()
-        ##print("gg")
-        #menubar = self.menuBar()
-        #regMenu = menubar.addMenu('&Регистрация')
-        #viewMenu = menubar.addMenu('&Просмотр')
-        #redMenu = menubar.addMenu('&Исправления')
-       # svdMenu = menubar.addMenu('&Сводки')
-        #sprMenu = menubar.addMenu('&Справочники')
-        #srvMenu = menubar.addMenu('&Сервис')
-        #qMenu = menubar.addMenu('&Выход')
-       # qMenu.addAction(exitAction)
-      #  regMenu.addAction('&REg', self.open_reg)
-       # #ggMenu.addAction("jjj")
-
-       # menubar.setStyleSheet("background-color: white;")
-
-        self.w = self.calc_expansion_w(self.expansion)
-        self.h = self.calc_expansion_h(self.expansion)
-
+        addInstitutionButton = QPushButton('')
+        addInstitutionButton.setIcon(QIcon('image/plus_2.png'))
+        addInstitutionButton.setIconSize(QSize(55, 55))
+        addInstitutionButton.clicked.connect(self.addCity)
+        updateButton = QPushButton('')
+        updateButton.setIcon(QIcon('image/update_2.png'))
+        updateButton.setIconSize(QSize(75, 75))
+        updateButton.clicked.connect(self.update_window)
+        backButton = QPushButton('')
+        backButton.setIcon(QIcon('image/back_2.png'))
+        backButton.setIconSize(QSize(75, 75))
+        backButton.clicked.connect(self.back)
+        exitButton = QPushButton('')
+        exitButton.setIcon(QIcon('image/exit_2.png'))
+        exitButton.setIconSize(QSize(75, 75))
+        exitButton.clicked.connect(self.exit)
+        
+        self.next_city = str()
+        #backButton.clicked.connect()
+        
+        db = SqliteDatabase('mydb.db')
+        db.connect()
+        j = 0
+        g = 0
+        h_city = QHBoxLayout()
+        v_city = QVBoxLayout()
+        v_city.setSpacing(10)
+        print("ffffggggfffff")
+        print(City.select())
+        for i in City.select():
+            print("ffffggggfffff")
+            if j == 3:
+                v_city.addLayout(h_city)
+                h_city = QHBoxLayout()
+                count = Institution.select().where(Institution.owner == i.name)
+                city = ListCity(i.name, len(count), self.expansion)
+                city.setObjectName(i.name)
+                #city.clicked.connect(self.get_button_name)
+                #city.clicked.connect(self.next)
+                #city.clicked.connect(self.objectName())
+                city.move(-300, -300)
+                
+                v_city.addLayout(h_city)
+                j = 0
+            else:
+                count = Institution.select().where(Institution.owner == i.name)
+                city = ListCity(i.name, len(count), self.expansion)
+                city.setObjectName(i.name)
+                print(city.objectName())
+                #city.clicked.connect(self.get_button_name)
+                #city.clicked.connect(self.next)
+                city.move(-300, -300)
+            h_city.addWidget(city)
+            j += 1
+            g += 1
+        if g < 4:
+            v_city.addLayout(h_city)
+        db.close()
+        
+        self.scroll = QScrollArea()
+        self.scroll.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setStyleSheet("border: 1px solid transparent; background-color: transparent;")
+        #tt = MainWindow()
+        gg = QWidget()
+        gg.setLayout(v_city)
+        self.scroll.setWidget(gg)
+        
+        self.title = QLabel("Веберите город")
+        
+        buttons_left = QHBoxLayout()
+        buttons_left.addWidget(backButton)
+        buttons_left.addWidget(addInstitutionButton)
+        buttons_right = QHBoxLayout()
+        buttons_right.addWidget(updateButton)
+        buttons_right.addWidget(exitButton)
+        
+        tit_h = QHBoxLayout()
+        tit_h.addLayout(buttons_left)
+        tit_h.addStretch(1)
+        tit_h.addWidget(self.title)
+        tit_h.addStretch(1)
+        tit_h.addLayout(buttons_right)
+        
+        vv = QVBoxLayout()
+        vv.addLayout(tit_h)
+        vv.addWidget(self.scroll)
+        
+        self.title.setStyleSheet("background-color: rgba(255, 255, 255, 0.5); color: black;"
+                                 "border: 3px solid transparent;"
+                                 "padding: 10px 300% 10px 300%;"
+                                 "margin-top: 0px;"
+                                 "font-size: 30px; font-family: Verdana;")
+        addInstitutionButton.setStyleSheet("background-color: rgba(255, 255, 255, 0.3); padding: 12px;")
+        updateButton.setStyleSheet("background-color: transparent;")
+        backButton.setStyleSheet("background-color: transparent")
+        exitButton.setStyleSheet("background-color: transparent")
+        #tit.setStyleSheet("background-color: rgba(255, 255, 255, 0.5); border-radius: 7px;")
+        
+        self.setLayout(vv)
+        print("2")
+        self.update()
         p = QPalette()
-        gradient = QLinearGradient(0, 0, 0, 400)
-        gradient.setColorAt(0.0, QColor(240, 240, 240))
-        gradient.setColorAt(1.0, QColor(240, 2, 27))
+        gradient = QLinearGradient(0, 0, 120, 400)
+        gradient.setColorAt(0.0, QColor(117,160,252))
+        gradient.setColorAt(1.0, QColor(193,203,253))
         p.setBrush(QPalette.Window, QBrush(gradient))
         self.setPalette(p)
-
-        conn = sqlite3.connect('mydatabase.db')
-        print('good')
-        cursor = conn.cursor()
-        print('good')
-        cursor.execute("SELECT * FROM city")
-        print('good')
-        y = cursor.fetchall()
-        print('good-length', len(y), y[0], y[1])
-        h = QHBoxLayout()
-        btn_h = QHBoxLayout()
-        btn_h.addStretch(1)
-        btn_h.addWidget(add_city)
-        for i in range(len(y)):
-            x = y[i]
-            btn = self.draw_city(x[0])
-            print(btn)
-            h.addWidget(btn)
-
-        blocv = QVBoxLayout()
-        blocv.addStretch(1)
-        blocv.addLayout(h)
-        blocv.addStretch(1)
-        blocv.addLayout(btn_h)
-        self.setLayout(blocv)
-        self.update()
-        self.setGeometry(0, 30, self.w, self.h)
+        print("3")
+        print(self.expansion)
+        if self.expansion == '1':
+            self.showFullScreen()
+        else:
+            self.setGeometry(0, 30, 800, 600)
+        print("4")
         self.setWindowTitle('Menubar')
+        print("5")
         self.show()
-
+        print("6")
+    def back(self):
+        self.close()
+    def exit(self):
+        quit()
+    def get_button_name(self):
+        #self.next_city = ListCity.next(self)
+        #print('ss', self)
+        #print(self.objectName())
+        print('nn: ', self.next_city)
+    def next(self):
+        self.up = UpdateScreen(self.expansion)
+        #name = self.next_city
+        #print("name: ", name)
+        #self.main = MainNew(self.expansion, name)
+        self.close()
+        self.up.close()
+    def update_window(self):
+        self.main = MainCity(self.expansion)
+        self.close()
     def open_reg(self):
-        self.reg = Reg(self.w, self.h)
-    def calc_expansion_w(self, expansion):
-        w = expansion.split('*')
-        W = int(w[0])
-        return W
-    def calc_expansion_h(self, expansion):
-        h = expansion.split('*')
-        H = int(h[1])
-        return H
+        self.reg = Reg(400, 600)
     def draw_city(self, name):
         print("start")
         self.btn = QPushButton(name)
@@ -98,57 +195,13 @@ class MainWidget(QWidget):
     def addCity(self):
         from city import CreateCity
         self.city = CreateCity()
-        self.update()
+        print("ALL GOOD, KIDDO")
     def open_city(self):
         self.text = self
         print("xep: ", self.text)
         self.city = City('gg')
-
-class Main(QMainWindow):
-
-    def __init__(self, expansion):
-        super().__init__()
-        self.expansion = expansion
-        self.initUI()
-
-    def initUI(self):
-        self.w = self.calc_expansion_w(self.expansion)
-        self.h = self.calc_expansion_h(self.expansion)
-        self.btn = QPushButton('jmyak')
-        self.g = QVBoxLayout()
-        self.g.addWidget(self.btn)
-        self.severniy = MainWidget(self.expansion)
-        print("1")
-        self.btn.resize(100, 100)
-        self.btn.move(100, 100)
-        self.btn.show()
-        self.setCentralWidget(self.severniy)
-        self.setLayout(self.g)
-        print("2")
-        self.update()
-        p = QPalette()
-        gradient = QLinearGradient(0, 0, 0, 400)
-        gradient.setColorAt(0.0, QColor(240, 240, 240))
-        gradient.setColorAt(1.0, QColor(240, 2, 27))
-        p.setBrush(QPalette.Window, QBrush(gradient))
-        self.setPalette(p)
-        print("3")
-        self.setGeometry(0, 30, self.w, self.h)
-        print("4")
-        self.setWindowTitle('Menubar')
-        print("5")
-        self.show()
-        print("6")
-
-    def calc_expansion_w(self, expansion):
-        w = expansion.split('*')
-        W = int(w[0])
-        return W
-    def calc_expansion_h(self, expansion):
-        h = expansion.split('*')
-        H = int(h[1])
-        return H
+       
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = Main()
+    ex = Main('1')
     sys.exit(app.exec_())

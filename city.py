@@ -2,14 +2,82 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import (QWidget, QPushButton,
-    QHBoxLayout, QVBoxLayout, QApplication, QLabel, QLineEdit, QComboBox, QDialog)
+    QHBoxLayout, QVBoxLayout, QApplication, QLabel, QLineEdit, QComboBox, QDialog, QMainWindow, QFrame)
 from PyQt5.QtGui import *
-from units import CreateUnit, Unit
+from units import CreateUnit
+from institution import MainInstitution
 import pickle
 import sqlite3
+from db_manger import *
 
+class ListCity(QPushButton):
+    def __init__(self, city, count, expansion):
+        super().__init__()
+        self.city = city
+        self.count = count
+        self.expanation = expansion
+        self.setObjectName(city)
+        print(self.objectName())
+        self.initUI()
+
+    def initUI(self):
+
+        self.okButton = QPushButton('+')
+        #okButton.clicked.connect(self.create_city)
+        #okButton.clicked.connect(self.main.update())
+        
+        pixmap = QPixmap('image/city.png')
+        pixmap_new = pixmap.scaled(100, 100)
+        icon = QPushButton()
+        icon.setIcon(QIcon('image/city.png'))
+        icon.setIconSize(QSize(110, 110))
+        self.clicked.connect(self.next)
+        self.city = QLabel(self.city)
+        s = str(self.count)
+        s1 = 'учреждений: '
+        s = s1 + s
+        self.counter = QLabel(s)
+
+        self.okButton.setStyleSheet("background-color: rgba(100, 0, 100, 100); color: white;"
+                                    "font-family: Verdana; font-size: 16px;"
+                                    "margin: 0px 10px 0px 10px;"
+                                    "border-radius: 20px;")
+
+        style_label = "padding-left: 0px;" \
+                      "font-size: 14px; font-family: Verdana;}" \
+                      "QFrame {background-color: rgba(255, 255, 255, 0.4); border-radius: 10px;}" \
+                      "QLabel {color: black; background-color: transparent;"
+        
+        self.info_v = QVBoxLayout()
+        self.info_v.addWidget(self.city)
+        self.info_v.addWidget(self.counter)
+        self.city_h = QHBoxLayout()
+        self.city_h.addWidget(icon)
+        self.city_h.addLayout(self.info_v)
+        frame = QFrame()
+        frame.setFrameShape(QFrame.Panel)
+        frame.setFrameShadow(QFrame.Sunken)
+        frame.setStyleSheet(style_label)
+        frame.setLayout(self.city_h)
+        x = QHBoxLayout()
+        x.addWidget(frame)
+        self.setLayout(x)
+        #self.setLayout(self.city_h)
+
+        self.setGeometry(300, 300, 300, 150)
+        self.setWindowTitle('Добавление города')
+        self.setFixedSize(300, 150)
+        self.show()
+    def next(self):
+        print("xxxx: ",self.objectName())
+        x = self.expanation
+        y = self.objectName()
+        self.new = MainInstitution(x, y)
+        print('xep')
+    def open_unit(self):
+        self.unit = CreateUnit()
 
 class CreateCity(QDialog):
 
@@ -19,123 +87,68 @@ class CreateCity(QDialog):
 
     def initUI(self):
 
-        okButton = QPushButton('+')
-        okButton.clicked.connect(self.create_city)
-        #okButton.clicked.connect(self.main.update())
+        addInstitutionButton = QPushButton('')
+        addInstitutionButton.setIcon(QIcon('image/plus_2.png'))
+        addInstitutionButton.setIconSize(QSize(55, 55))
+        addInstitutionButton.clicked.connect(self.create_city)
+        
+        city = QLabel("Город")
+        self.cityEdit = QLineEdit()
 
-        name = QLabel('Название:')
-        self.nameEdit = QLineEdit()
-
-        okButton.setStyleSheet("background-color: rgba(100, 0, 100, 100); color: white;"
-                               "font-family: Verdana; font-size: 16px;"
-                               "margin: 0px 10px 0px 10px;"
-                               "border-radius: 20px;")
-        name.setStyleSheet("color: #334761;"
-                            "font-family: Verdana; font-size: 16px;"
-                            "margin: 0px 40px 0px 0px;"
-                            "border: 3px solid transparent; border-left-color: red")
-        self.nameEdit.setStyleSheet("color: #334761;"
-                                "font-family: Verdana; font-size: 14px;"
-                                "border-radius: 20px;"
-                                "border: 3px solid transparent; border-right-color: red")
-
-        hmail = QHBoxLayout()
-        hmail.addWidget(name)
-        hmail.addWidget(self.nameEdit)
-        hbox = QHBoxLayout()
-        hbox.addWidget(okButton)
-        hbox.addStretch(1)
+        style = "QLabel {" \
+                "color: black; font-family: Verdana; font-size: 20px;" \
+                "margin-top: 40px;" \
+                "}" \
+                "QLineEdit {" \
+                "color: black; background-color: rgb(193,203,253); font-family: Verdana; font-size: 20px;" \
+                "border-radius: 0px; margin-top: 40px;" \
+                "}" \
+                "QPushButton {" \
+                "background-color: rgba(255, 255, 255, 0.3);" \
+                "margin: 0px -2px 0px -2px; border-radius: 20px;" \
+                "}"
+        
+        self.setStyleSheet(style)
+        
+        city_h = QHBoxLayout()
+        city_h.addWidget(city)
+        city_h.addWidget(self.cityEdit)
+        button_h = QHBoxLayout()
+        button_h.addStretch(1)
+        button_h.addWidget(addInstitutionButton)
+        button_h.addStretch(1)
         vbox = QVBoxLayout()
-        vbox.addLayout(hmail)
-        vbox.addLayout(hbox)
-        vbox.addLayout(hbox)
-
+        vbox.addLayout(city_h)
+        vbox.addLayout(button_h)
+        
         self.setLayout(vbox)
+        
+        p = QPalette()
+        gradient = QLinearGradient(0, 0, 120, 400)
+        gradient.setColorAt(0.0, QColor(117,160,252))
+        gradient.setColorAt(1.0, QColor(193,203,253))
+        p.setBrush(QPalette.Window, QBrush(gradient))
+        self.setPalette(p)
 
         self.setGeometry(300, 300, 300, 150)
         self.setWindowTitle('Добавление города')
-        self.setFixedSize(300, 150)
+        self.setFixedSize(500, 250)
         self.show()
 
     def create_city(self):
-        name = self.nameEdit.text()
-        conn = sqlite3.connect('mydatabase.db')
-        print('good')
-        cursor = conn.cursor()
-        print('good')
-        jj = str(name)
-        city = [jj]
-        cursor.execute("INSERT INTO city VALUES (?)", city)
-        print('good')
-        cursor.execute("SELECT * FROM city")
-        print('good')
-        y = cursor.fetchall()
-        print('good-length', len(y))
-        conn.commit()
+        city = self.cityEdit.text()
+        
+        db = SqliteDatabase('mydb.db')
+        db.connect()
+        
+        institution = City.create(name=city, count_institution=0, is_relative=True)
+        
+        db.close()
+        
         self.close()
-
-class City(QWidget):
-    def __init__(self, name_city):
-        super().__init__()
-        self.name_city = name_city
-        self.initUI()
-
-    def initUI(self):
-
-        addButton = QPushButton('+')
-        addButton.clicked.connect(self.open_unit)
-        print("ffoodd")
-        name = QLabel(self.name_city)
-        imag = QLabel()
-        pixar = QPixmap('city.png')
-        pixmap = pixar.scaled(64, 64)
-        imag.setPixmap(pixmap)
-        print("ffoodd")
-
-        header = QHBoxLayout()
-        header.addWidget(imag)
-        header.addStretch(1)
-        header.addWidget(addButton)
-        header.addWidget(name)
-        self.vbox = QVBoxLayout()
-        self.vbox.addLayout(header)
-        self.vbox.addStretch(1)
-        conn = sqlite3.connect('mydatabase.db')
-        print('good')
-        cursor = conn.cursor()
-        print('good')
-        cursor.execute("SELECT * FROM units")
-        print('good')
-        y = cursor.fetchall()
-        #print('good-length', len(y), y[0], y[1])
-        for i in range(len(y)):
-            x = y[i]
-            print('x = ', x[0])
-            brand_ = QLabel(x[0])
-            type_ = QLabel(x[1])
-            station_number_ = QLabel(x[2])
-            reg_number_ = QLabel(x[3])
-            btn = QPushButton('Список узлов')
-            print(btn)
-            h = QHBoxLayout()
-            h.addWidget(brand_)
-            h.addWidget(type_)
-            h.addWidget(station_number_)
-            h.addWidget(reg_number_)
-            h.addWidget(btn)
-            self.vbox.addLayout(h)
-        self.setLayout(self.vbox)
-        print("ffoodd")
-
-        self.setGeometry(300, 300, 300, 150)
-        self.setWindowTitle('Добавление города')
-        self.show()
-
-    def open_unit(self):
-        self.unit = CreateUnit()
 
 if __name__ == '__main__':
 
     app = QApplication(sys.argv)
-    ex = City('rr')
+    ex = CreateCity()
     sys.exit(app.exec_())

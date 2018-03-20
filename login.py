@@ -4,12 +4,13 @@
 import sys
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QWidget, QPushButton,
-    QHBoxLayout, QVBoxLayout, QApplication, QLabel, QLineEdit, QComboBox)
-from main import Main
+    QHBoxLayout, QVBoxLayout, QApplication, QLabel, QLineEdit, QComboBox, QCheckBox)
+from main import MainCity
 from PyQt5.QtGui import *
 import pickle
 import sqlite3
-
+from peewee import *
+from db_manger import *
 
 class Login(QWidget):
 
@@ -19,43 +20,47 @@ class Login(QWidget):
 
     def initUI(self):
 
-        okButton = QPushButton('Log in')
+        okButton = QPushButton('Войти')
         okButton.clicked.connect(self.login)
 
-        email = QLabel('E-mail:')
-        password = QLabel('Password:')
+        email = QLabel('Логин')
+        password = QLabel('Пароль')
         self.emailEdit = QLineEdit('dima')
         self.passwordEdit = QLineEdit('123')
-        self.chose_expansion = QComboBox()
-        self.chose_expansion.addItem('600*400')
-        self.chose_expansion.addItem('800*600')
-        self.chose_expansion.addItem('1200*800')
+        #self.chose_expansion = QComboBox()
+        #self.chose_expansion.addItem('600*400')
+        #self.chose_expansion.addItem('800*600')
+        #self.chose_expansion.addItem('1200*800')
+        self.chose_fullscrin = QCheckBox('Полный экран')
 
-        #shadow = Q(self)
-        #shadow.setColor(QColor(50,200,200))
-        #shadow.setBlurRadius(30)
-        #shadow.setOffset(4,-3)
-
-        okButton.setStyleSheet("background-color: rgba(100, 0, 100, 100); color: white;"
-                               "font-family: Verdana; font-size: 16px;"
-                               "margin: 0px 10px 0px 10px;"
-                               "border-radius: 20px;")
-        email.setStyleSheet("color: #334761;"
-                            "font-family: Verdana; font-size: 16px;"
-                            "margin: 0px 40px 0px 0px;"
-                            "border: 3px solid transparent; border-left-color: red")
-        password.setStyleSheet("color: #334761;"
-                               "font-family: Verdana; font-size: 16px;"
-                               "margin: 0px 15px 0px 0px;"
-                               "border: 3px solid transparent; border-left-color: red")
-        self.emailEdit.setStyleSheet("color: #334761;"
-                                "font-family: Verdana; font-size: 14px;"
-                                "border-radius: 20px;"
-                                "border: 3px solid transparent; border-right-color: red")
-        self.passwordEdit.setStyleSheet("color: #334761;"
-                                   "font-family: Verdana; font-size: 14px;"
-                                   "border-radius: 100px;"
-                                   "border: 3px solid transparent; border-right-color: red")
+        okButton.setStyleSheet("background-color: rgb(117,160,252); color: black;"
+                               "font-family: Verdana; font-size: 20px;"
+                               "margin: 0px 60px 0px 0px;"
+                               "border-radius: 20px;"
+                               "width: 230px;")
+        self.chose_fullscrin.setStyleSheet("margin-left: 65px;"
+                                           "font-size: 12px; font-family: Verdana;")
+        email.setStyleSheet("color: black;"
+                            "font-family: Verdana; font-size: 20px;"
+                            "margin: 0px 47px 0px 60px;"
+                            "padding-bottom: 0px;")
+        password.setStyleSheet("color: black;"
+                               "font-family: Verdana; font-size: 20px;"
+                               "margin: 0px 37px 0px 60px;"
+                               "padding-top: 0px;")
+        self.emailEdit.setStyleSheet("color: black; background-color: rgb(193,203,253);"
+                                     "font-family: Verdana; font-size: 16px;"
+                                     "border-radius: 20px;"
+                                     "margin: 0px 60px 0px 0px;")
+        self.passwordEdit.setStyleSheet("color: black; background-color: rgb(193,203,253);"
+                                        "font-family: Verdana; font-size: 16px;"
+                                        "border-radius: 100px;"
+                                        "margin: 0px 60px 0px 0px;")
+        #self.chose_expansion.setStyleSheet("margin: 0px 80px 0px 80px;")
+        
+        style = "drop-down {margin: 0px 80px 0px 80px;}"
+        self.setStyleSheet(style)
+        
 
 
         hmail = QHBoxLayout()
@@ -64,6 +69,11 @@ class Login(QWidget):
         hpass = QHBoxLayout()
         hpass.addWidget(password)
         hpass.addWidget(self.passwordEdit)
+        vexpansion = QVBoxLayout()
+        vexpansion.addWidget(self.chose_fullscrin)
+        hsubmit = QHBoxLayout()
+        hsubmit.addLayout(vexpansion)
+        hsubmit.addWidget(okButton)
 
         hbox = QHBoxLayout()
         hbox.addWidget(okButton)
@@ -71,69 +81,56 @@ class Login(QWidget):
         vbox = QVBoxLayout()
         vbox.addLayout(hmail)
         vbox.addLayout(hpass)
-        vbox.addWidget(self.chose_expansion)
-        vbox.addLayout(hbox)
+        vbox.addLayout(hsubmit)
+        
+        p = QPalette()
+        gradient = QLinearGradient(0, 0, 120, 400)
+        gradient.setColorAt(0.0, QColor(117,160,252))
+        gradient.setColorAt(1.0, QColor(193,203,253))
+        p.setBrush(QPalette.Window, QBrush(gradient))
+        self.setPalette(p)
 
         self.setLayout(vbox)
-
         self.setGeometry(300, 300, 300, 150)
         self.setWindowTitle('Log in')
-        self.setFixedSize(300, 150)
+        self.setFixedSize(500, 250)
         self.show()
-
+    
     def login(self):
-        email = self.emailEdit.text()
-        password = self.passwordEdit.text()
-        conn = sqlite3.connect('mydatabase.db')
-        print('good')
-        #conn.row_factory = sqlite3.Row
-        #Создание курсора
-        c = conn.cursor()
-        print('good')
-        c.execute("SELECT * FROM users")
-        print('good')
-        y = c.fetchall()
-        x = y[0]
-        print('good')
-        name = x[0]
-        pas = x[1]
-        print(name, pas)
-        if str(email) == str(name):
-            if str(password) == str(pas):
-                number = self.chose_expansion.currentIndex()
-                print("()")
-                expansion = self.chose_expansion.itemText(number)
-                print("!")
-                self.main = Main(expansion)
-                print("!!")
-                self.close()
-                print("!!!")
-    def login_old(self):
-        email = self.emailEdit.text()
-        password = self.passwordEdit.text()
-        d = {'email':email, 'pass':password}
-        f = open('login.txt', 'rb')
-        data_new = pickle.load(f)
-        print("d:", d, data_new)
-        s = set(data_new.keys())
-        print(s)
-
-        if str(d['email']) in data_new:
-            number = self.chose_expansion.currentIndex()
-            expansion = self.chose_expansion.itemText(number)
-            print(expansion)
-            print('good')
-            self.main = Main(expansion)
-            self.close()
-            print("good")
-        else:
-            print("no", d['email'])
-        f.close()
-
-
-
+        db = SqliteDatabase('mydb.db')
+        db.connect()
+        
+        #grandma_ = Institution.get(Institution.name == 'ТЭЦ-5')
+        #print("===========================================",grandma_.name)
+    
+        for i in Users.select():
+            name = self.emailEdit.text()
+            password = self.passwordEdit.text()
+            print(i.name, i.password)
+            name_right = i.name
+            password_right = i.password
+            print(name_right, password_right)
+            if str(name) == str(name_right):
+                if str(password) == str(password_right):
+                    if self.chose_fullscrin.isChecked():
+                        expansion = '1'
+                        print("!d")
+                        self.main = MainCity('1')
+                        print("!")
+                        self.close()
+                        print("!")
+                    else:
+                        expansion = '2'
+                        print("!!")
+                        self.main = MainCity(expansion)
+                        print("!!")
+                        self.close()
+                    print("!!")
+            else:
+                print("nea")
+        db.close()
+    
 if __name__ == '__main__':
-
     app = QApplication(sys.argv)
     ex = Login()
     sys.exit(app.exec_())

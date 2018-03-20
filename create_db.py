@@ -16,6 +16,36 @@ cursor.execute('''CREATE TABLE city (name varchar)''')
 jj = str("gg")
 city = [jj]
 cursor.execute("INSERT INTO city VALUES (?)", city)
+jj = str("gg")
+city = [jj]
+cursor.execute("INSERT INTO city VALUES (?)", city)
+jj = str("gg")
+city = [jj]
+cursor.execute("INSERT INTO city VALUES (?)", city)
+jj = str("gg")
+city = [jj]
+cursor.execute("INSERT INTO city VALUES (?)", city)
+jj = str("gg")
+city = [jj]
+cursor.execute("INSERT INTO city VALUES (?)", city)
+jj = str("gg")
+city = [jj]
+cursor.execute("INSERT INTO city VALUES (?)", city)
+jj = str("gg")
+city = [jj]
+cursor.execute("INSERT INTO city VALUES (?)", city)
+jj = str("gg")
+city = [jj]
+cursor.execute("INSERT INTO city VALUES (?)", city)
+jj = str("gg")
+city = [jj]
+cursor.execute("INSERT INTO city VALUES (?)", city)
+jj = str("gg")
+city = [jj]
+cursor.execute("INSERT INTO city VALUES (?)", city)
+jj = str("gg")
+city = [jj]
+cursor.execute("INSERT INTO city VALUES (?)", city)
 jj = str("gh")
 city = [jj]
 cursor.execute("INSERT INTO city VALUES (?)", city)
