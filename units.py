@@ -57,7 +57,7 @@ class MainUnit(QWidget):
     def initUI(self):
         addInstitutionButton = QPushButton('')
         addInstitutionButton.setIcon(QIcon('image/plus_2.png'))
-        addInstitutionButton.setIconSize(QSize(55, 55))
+        addInstitutionButton.setIconSize(QSize(75, 75))
         addInstitutionButton.clicked.connect(self.addCity)
         updateButton = QPushButton('')
         updateButton.setIcon(QIcon('image/update_2.png'))
@@ -133,13 +133,12 @@ class MainUnit(QWidget):
                             "padding: 10px 300% 10px 300%;"
                             "margin-top: 0px;"
                             "font-size: 30px; font-family: Verdana;")
-        addInstitutionButton.setStyleSheet("background-color: rgba(255, 255, 255, 0.3); padding: 12px;")
-        updateButton.setStyleSheet("background-color: transparent;")
-        backButton.setStyleSheet("background-color: transparent")
-        exitButton.setStyleSheet("background-color: transparent")
+        addInstitutionButton.setStyleSheet("background-color: rgba(255, 255, 255, 0.1); padding: 12px;")
+        updateButton.setStyleSheet("background-color: rgba(255, 255, 255, 0.1); padding: 12px;")
+        backButton.setStyleSheet("background-color: rgba(255, 255, 255, 0.1); padding: 12px;")
+        exitButton.setStyleSheet("background-color: rgba(255, 255, 255, 0.1); padding: 12px;")
         
         self.setLayout(vv)
-        print("2")
         self.update()
         p = QPalette()
         gradient = QLinearGradient(0, 0, 120, 400)
@@ -147,17 +146,13 @@ class MainUnit(QWidget):
         gradient.setColorAt(1.0, QColor(193,203,253))
         p.setBrush(QPalette.Window, QBrush(gradient))
         self.setPalette(p)
-        print("3")
         print(self.expansion)
         if self.expansion == '1':
             self.showFullScreen()
         else:
             self.setGeometry(0, 30, 800, 600)
-        print("4")
         self.setWindowTitle('Menubar')
-        print("5")
         self.show()
-        print("6")
     def back(self):
         self.close()
     def exit(self):
@@ -181,7 +176,6 @@ class MainUnit(QWidget):
         print("ALL GOOD, KIDDO")
     def open_city(self):
         self.text = self
-        print("xep: ", self.text)
         self.city = City('gg')
 
 class ListUnit(QPushButton):
@@ -286,7 +280,6 @@ class CreateUnit(QWidget):
         button_h.addStretch(1)
         button_h.addWidget(addInstitutionButton)
         button_h.addStretch(1)
-        print("ggghhhggg")
         self.setGeometry(300, 300, 300, 150)
         self.setWindowTitle('Добавление города')
         self.setFixedSize(300, 150)
@@ -346,6 +339,6 @@ class CreateUnit(QWidget):
 if __name__ == '__main__':
 
     app = QApplication(sys.argv)
-    ex = ListInstitution('jopa', 'jpa')
+    ex = ListInstitution('', '')
     sys.exit(app.exec_())
 

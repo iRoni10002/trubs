@@ -51,8 +51,25 @@ class Conclusions(Model):
 	type = CharField()
 	name = CharField()
 	reason = CharField()
-	recommendatiton = CharField()
+	recommendation = CharField()
 	photo = CharField()
+	date_z = CharField()
+	date_v = CharField()
+	date_d = CharField()
+	text = CharField()
+	
+	class Meta:
+		database = db
+
+class Conclusions2(Model):
+	owner = CharField()
+	number = CharField()
+	type = CharField()
+	name = CharField()
+	reason = CharField()
+	recommendation = CharField()
+	photo = CharField()
+	conclusions = CharField()
 	date_z = CharField()
 	date_v = CharField()
 	date_d = CharField()
@@ -75,6 +92,11 @@ db.connect()
 #db.create_tables([Users])
 #db.create_tables([City])
 #db.create_tables([Hosts])
+#db.create_tables([Conclusions2])
+
+#for i in range(10):
+#	concl = Conclusions2.create(owner='DZ-4443', number='DRFDSFV', type='ytuy', name='alex', reason='polomka',
+#								recommendation='delete', photo='net',conclusions='v util`', date_z='010101', date_v='020202', date_d='ggg', text='gdgdgd')
 
 #host = Hosts.create(owner='andrey', number='DZ-4443', name='gegeshe4ka', mark='sony', icon='/jpg.png', period='10', mark_of_steel='585')
 #host = Hosts.create(owner='january', number='DZ-4443', name='gegeshe4ka', mark='sony', icon='/jpg.png', period='10', mark_of_steel='585')

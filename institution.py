@@ -48,7 +48,7 @@ class MainInstitution(QWidget):
     def initUI(self):
         addInstitutionButton = QPushButton('')
         addInstitutionButton.setIcon(QIcon('image/plus_2.png'))
-        addInstitutionButton.setIconSize(QSize(55, 55))
+        addInstitutionButton.setIconSize(QSize(75, 75))
         addInstitutionButton.clicked.connect(self.addCity)
         updateButton = QPushButton('')
         updateButton.setIcon(QIcon('image/update_2.png'))
@@ -124,20 +124,17 @@ class MainInstitution(QWidget):
         vv.addLayout(tit_h)
         vv.addWidget(self.scroll)
         
-        print("fgggdsgsg")
-        
         title.setStyleSheet("background-color: rgba(255, 255, 255, 0.5); color: black;"
                             "border: 3px solid transparent;"
                             "padding: 10px 300% 10px 300%;"
                             "margin-top: 0px;"
                             "font-size: 30px; font-family: Verdana;")
-        addInstitutionButton.setStyleSheet("background-color: rgba(255, 255, 255, 0.3); padding: 12px;")
-        updateButton.setStyleSheet("background-color: transparent;")
-        backButton.setStyleSheet("background-color: transparent")
-        exitButton.setStyleSheet("background-color: transparent")
+        addInstitutionButton.setStyleSheet("background-color: rgba(255, 255, 255, 0.1); padding: 12px;")
+        updateButton.setStyleSheet("background-color: rgba(255, 255, 255, 0.1); padding: 12px;")
+        backButton.setStyleSheet("background-color: rgba(255, 255, 255, 0.1); padding: 12px;")
+        exitButton.setStyleSheet("background-color: rgba(255, 255, 255, 0.1); padding: 12px;")
         
         self.setLayout(vv)
-        print("2")
         self.update()
         p = QPalette()
         gradient = QLinearGradient(0, 0, 120, 400)
@@ -145,17 +142,12 @@ class MainInstitution(QWidget):
         gradient.setColorAt(1.0, QColor(193,203,253))
         p.setBrush(QPalette.Window, QBrush(gradient))
         self.setPalette(p)
-        print("3")
-        print(self.expansion)
         if self.expansion == '1':
             self.showFullScreen()
         else:
             self.setGeometry(0, 30, 800, 600)
-        print("4")
         self.setWindowTitle('Menubar')
-        print("5")
         self.show()
-        print("6")
     def back(self):
         self.close()
     def exit(self):
@@ -168,18 +160,14 @@ class MainInstitution(QWidget):
     def update_(self):
         pass
     def draw_city(self, name):
-        print("start")
         self.btn = QPushButton(name)
         self.btn.clicked.connect(self.open_city)
-        print("end")
         return self.btn
     def addCity(self):
         from city import CreateCity
         self.add = CreateInstitution(self.city_name)
-        print("ALL GOOD, KIDDO")
     def open_city(self):
         self.text = self
-        print("xep: ", self.text)
         self.city = City('gg')
 
 class ListInstitution(QPushButton):
@@ -189,7 +177,6 @@ class ListInstitution(QPushButton):
         self.title = title
         self.expansion = expansion
         self.count = count
-        print("fgggdsgsg")
         self.initUI()
 
     def initUI(self):
@@ -247,7 +234,6 @@ class ListInstitution(QPushButton):
         x = self.expansion
         y = self.objectName()
         self.new = MainUnit(x, y)
-        print('xepo4ek')
     def open_unit(self):
         self.unit = CreateUnit()
 
@@ -330,66 +316,6 @@ class CreateInstitution(QWidget):
         db.close()
         
         self.close()
-
-class City(QWidget):
-    def __init__(self, name_city):
-        super().__init__()
-        self.name_city = name_city
-        self.initUI()
-
-    def initUI(self):
-
-        addButton = QPushButton('+')
-        addButton.clicked.connect(self.open_unit)
-        print("ffoodd")
-        name = QLabel(self.name_city)
-        imag = QLabel()
-        pixar = QPixmap('city.png')
-        pixmap = pixar.scaled(64, 64)
-        imag.setPixmap(pixmap)
-        print("ffoodd")
-
-        header = QHBoxLayout()
-        header.addWidget(imag)
-        header.addStretch(1)
-        header.addWidget(addButton)
-        header.addWidget(name)
-        self.vbox = QVBoxLayout()
-        self.vbox.addLayout(header)
-        self.vbox.addStretch(1)
-        conn = sqlite3.connect('mydatabase.db')
-        print('good')
-        cursor = conn.cursor()
-        print('good')
-        cursor.execute("SELECT * FROM units")
-        print('good')
-        y = cursor.fetchall()
-        #print('good-length', len(y), y[0], y[1])
-        for i in range(len(y)):
-            x = y[i]
-            print('x = ', x[0])
-            brand_ = QLabel(x[0])
-            type_ = QLabel(x[1])
-            station_number_ = QLabel(x[2])
-            reg_number_ = QLabel(x[3])
-            btn = QPushButton('Список узлов')
-            print(btn)
-            h = QHBoxLayout()
-            h.addWidget(brand_)
-            h.addWidget(type_)
-            h.addWidget(station_number_)
-            h.addWidget(reg_number_)
-            h.addWidget(btn)
-            self.vbox.addLayout(h)
-        self.setLayout(self.vbox)
-        print("ffoodd")
-
-        self.setGeometry(300, 300, 300, 150)
-        self.setWindowTitle('Добавление города')
-        self.show()
-
-    def open_unit(self):
-        self.unit = CreateUnit()
 
 if __name__ == '__main__':
 

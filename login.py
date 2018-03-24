@@ -5,7 +5,7 @@ import sys
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QWidget, QPushButton,
     QHBoxLayout, QVBoxLayout, QApplication, QLabel, QLineEdit, QComboBox, QCheckBox)
-from main import MainCity
+from main import *
 from PyQt5.QtGui import *
 import pickle
 import sqlite3
@@ -89,7 +89,7 @@ class Login(QWidget):
         gradient.setColorAt(1.0, QColor(193,203,253))
         p.setBrush(QPalette.Window, QBrush(gradient))
         self.setPalette(p)
-
+        
         self.setLayout(vbox)
         self.setGeometry(300, 300, 300, 150)
         self.setWindowTitle('Log in')
@@ -114,18 +114,12 @@ class Login(QWidget):
                 if str(password) == str(password_right):
                     if self.chose_fullscrin.isChecked():
                         expansion = '1'
-                        print("!d")
                         self.main = MainCity('1')
-                        print("!")
                         self.close()
-                        print("!")
                     else:
                         expansion = '2'
-                        print("!!")
                         self.main = MainCity(expansion)
-                        print("!!")
                         self.close()
-                    print("!!")
             else:
                 print("nea")
         db.close()

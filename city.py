@@ -75,7 +75,6 @@ class ListCity(QPushButton):
         x = self.expanation
         y = self.objectName()
         self.new = MainInstitution(x, y)
-        print('xep')
     def open_unit(self):
         self.unit = CreateUnit()
 

@@ -48,7 +48,7 @@ class MainCity(QWidget):
     def initUI(self):
         addInstitutionButton = QPushButton('')
         addInstitutionButton.setIcon(QIcon('image/plus_2.png'))
-        addInstitutionButton.setIconSize(QSize(55, 55))
+        addInstitutionButton.setIconSize(QSize(75, 75))
         addInstitutionButton.clicked.connect(self.addCity)
         updateButton = QPushButton('')
         updateButton.setIcon(QIcon('image/update_2.png'))
@@ -73,10 +73,7 @@ class MainCity(QWidget):
         h_city = QHBoxLayout()
         v_city = QVBoxLayout()
         v_city.setSpacing(10)
-        print("ffffggggfffff")
-        print(City.select())
         for i in City.select():
-            print("ffffggggfffff")
             if j == 3:
                 v_city.addLayout(h_city)
                 h_city = QHBoxLayout()
@@ -139,14 +136,13 @@ class MainCity(QWidget):
                                  "padding: 10px 300% 10px 300%;"
                                  "margin-top: 0px;"
                                  "font-size: 30px; font-family: Verdana;")
-        addInstitutionButton.setStyleSheet("background-color: rgba(255, 255, 255, 0.3); padding: 12px;")
-        updateButton.setStyleSheet("background-color: transparent;")
-        backButton.setStyleSheet("background-color: transparent")
-        exitButton.setStyleSheet("background-color: transparent")
+        addInstitutionButton.setStyleSheet("background-color: rgba(255, 255, 255, 0.1); padding: 12px;")
+        updateButton.setStyleSheet("background-color: rgba(255, 255, 255, 0.1); padding: 12px;")
+        backButton.setStyleSheet("background-color: rgba(255, 255, 255, 0.1); padding: 12px;")
+        exitButton.setStyleSheet("background-color: rgba(255, 255, 255, 0.1); padding: 12px;")
         #tit.setStyleSheet("background-color: rgba(255, 255, 255, 0.5); border-radius: 7px;")
         
         self.setLayout(vv)
-        print("2")
         self.update()
         p = QPalette()
         gradient = QLinearGradient(0, 0, 120, 400)
@@ -154,26 +150,20 @@ class MainCity(QWidget):
         gradient.setColorAt(1.0, QColor(193,203,253))
         p.setBrush(QPalette.Window, QBrush(gradient))
         self.setPalette(p)
-        print("3")
-        print(self.expansion)
         if self.expansion == '1':
             self.showFullScreen()
         else:
             self.setGeometry(0, 30, 800, 600)
-        print("4")
         self.setWindowTitle('Menubar')
-        print("5")
         self.show()
-        print("6")
     def back(self):
         self.close()
     def exit(self):
         quit()
-    def get_button_name(self):
+    '''def get_button_name(self):
         #self.next_city = ListCity.next(self)
         #print('ss', self)
-        #print(self.objectName())
-        print('nn: ', self.next_city)
+        #print(self.objectName())'''
     def next(self):
         self.up = UpdateScreen(self.expansion)
         #name = self.next_city
@@ -187,18 +177,14 @@ class MainCity(QWidget):
     def open_reg(self):
         self.reg = Reg(400, 600)
     def draw_city(self, name):
-        print("start")
         self.btn = QPushButton(name)
         self.btn.clicked.connect(self.open_city)
-        print("end")
         return self.btn
     def addCity(self):
         from city import CreateCity
         self.city = CreateCity()
-        print("ALL GOOD, KIDDO")
     def open_city(self):
         self.text = self
-        print("xep: ", self.text)
         self.city = City('gg')
        
 if __name__ == '__main__':
